@@ -50,6 +50,8 @@ public class AnalyticsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         binding.dateSet.setOnClickListener(this::onClick);
         List<String> aList = new ArrayList<String>();
+        int totalEmission = 0;
+        int totalkm = 0;
 
         // TODO: send request to server for trips between two dates
 
@@ -66,8 +68,12 @@ public class AnalyticsFragment extends Fragment {
                 String [] trip = new String[4];
                 trip[0] = String.valueOf(element.getInt("trip_id"));
                 trip[1] = element.getString("date");
-                trip[2] = String.valueOf(element.getInt("dist"));
-                trip[3] = String.valueOf(element.getInt("total_emi"));
+                int dist = element.getInt("dist");
+                int emission = element.getInt("total_emi");
+                totalEmission += emission;
+                totalkm += dist;
+                trip[2] = String.valueOf(dist);
+                trip[3] = String.valueOf(emission);
                 tripData.add(trip);
             }
             //populate list to display trips on the screen
@@ -98,6 +104,11 @@ public class AnalyticsFragment extends Fragment {
         binding.emissionsGraph.setData(data);
         binding.emissionsGraph.invalidate();
 
+
+
+        String averageEmission = "A total of " + totalkm + " km travelled, and " + totalEmission + " emission between start date and end date." +
+                " Average emission per km is " + totalEmission/totalkm + ".";
+        binding.analysisId.setText(averageEmission);
     }
 
     private void onClick(View view) {

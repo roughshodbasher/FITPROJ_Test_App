@@ -23,7 +23,9 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,24 +49,45 @@ public class AnalyticsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.dateSet.setOnClickListener(this::onClick);
-
-        //populate list
         List<String> aList = new ArrayList<String>();
-        /*for (int i = 0; i < 5; i++){
-            aList.add("a");
-        }*/
-        aList.add("Trip 1   1/1/2021    24km    3168g/KM");
-        aList.add("Trip 2   2/1/2021    18km    2376g/KM");
-        aList.add("Trip 3   3/1/2021    10km    1320g/KM");
-        aList.add("Trip 4   4/1/2021    33km    4356g/KM");
-        aList.add("Trip 5   5/1/2021    22km    2904g/KM");
+
+        // TODO: send request to server for trips between two dates
+
+        // receive response from server, display it on UI
+        String response = "{\"message\": [{\"user_id\": 2, \"trip_id\": 1, \"veh_reg\": \"111KLM\", \"end\": \"CBD\", \"total_emi\": 64400, \"start\": \"Monash Clayton\", \"dist\": 23, \"date\": \"2021-09-20\"}, \n" +
+                "{\"user_id\": 1, \"trip_id\": 2, \"veh_reg\": \"ABC123\", \"end\": \"Monash University Caulfied\", \"total_emi\": 23, \"start\": \"Monash University Clayton\", \"dist\": 9, \"date\": \"2021-09-28\"}], \"status\": 200}";
+        ArrayList<String[]> tripData =  new ArrayList<>();
+
+        try {
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONArray message = jsonResponse.getJSONArray("message");
+            for (int i = 0; i < message.length(); i++) {
+                JSONObject element = message.getJSONObject(i);
+                String [] trip = new String[4];
+                trip[0] = String.valueOf(element.getInt("trip_id"));
+                trip[1] = element.getString("date");
+                trip[2] = String.valueOf(element.getInt("dist"));
+                trip[3] = String.valueOf(element.getInt("total_emi"));
+                tripData.add(trip);
+            }
+            //populate list to display trips on the screen
+            for (int i = 0; i < tripData.size(); i++){
+                String[] trip = tripData.get(i);
+                aList.add("Trip " + trip[0] + "  " + trip[1] + "  " + trip[2]+ "km " + trip[3] +"g/KM");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
         ArrayAdapter<String> aListAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, aList);
         binding.tripsList.setAdapter(aListAdapter);
 
-        //graph
+        //graph, display emission on the graph
         List<Entry> bList = new ArrayList<Entry>();
-        for (int i = 0; i < 5; i++){
-            bList.add(new Entry(i, i));
+        for (int i = 0; i < tripData.size(); i++){
+            bList.add(new Entry(i, Integer.parseInt(tripData.get(i)[3])));
         }
 
         LineDataSet setList = new LineDataSet(bList, "Emissions");

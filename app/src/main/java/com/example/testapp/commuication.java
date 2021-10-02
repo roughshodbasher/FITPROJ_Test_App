@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static android.content.ContentValues.TAG;
 
@@ -58,17 +59,25 @@ public class commuication {
         public String getMessage() {
             byte[] b = new byte[0];
             try {
-                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-                //out.println(json);
-                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                while (!in.ready()) {
-                    continue;
-                }
-//                String response = in.readLine();
-//                return response;
-                
-                dIn.read(b);
-                return (String) b.toString();
+//                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+//                //out.println(json);
+//                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//                while (!in.ready()) {
+//                    continue;
+//                }
+////                String response = in.readLine();
+////                return response;
+//
+//                int byteRed = dIn.read(b);
+//                String s = new String(b,"UTF-8");
+//                return s;
+                InputStream in = null;
+                in = s.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String request;
+                request = br.readLine();
+                int x = 0;
+                return request;
             } catch (Exception e) {
                 return "Error";
             }

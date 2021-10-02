@@ -1,14 +1,10 @@
 package com.example.testapp;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.testapp.databinding.FragmentStartTripBinding;
@@ -40,7 +35,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -53,10 +47,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
-import static android.content.Context.LOCATION_SERVICE;
 
 public class StartTripFragment extends Fragment {
 
@@ -174,7 +166,8 @@ public class StartTripFragment extends Fragment {
                     data.put("start", startLatLng);
                     data.put("destinations", destinationListLatLng);
                     data.put("vehicle",binding.carAutoCompleteText.getText());
-                    json.put("requestType", "directions");
+                    json.put("name", "directions");
+                    json.put("type", 0);
                     json.put("data", data);
                 } catch (JSONException e) {
                     e.printStackTrace();

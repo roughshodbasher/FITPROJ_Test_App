@@ -1,16 +1,11 @@
 package com.example.testapp;
 
-import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONObject;
-import com.example.testapp.commuication;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 
-import java.io.IOException;
-import java.net.Socket;
+import com.google.gson.Gson;
+
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -20,9 +15,8 @@ import static android.content.ContentValues.TAG;
 public class asyncCommunication implements Runnable {
     String ip;
     Integer port;
-    String startLocation;
-    List<String> destinations;
     String output;
+
     Boolean gotMessage = false;
     JSONObject message;
     asyncCommunication(String ip, Integer port, JSONObject message) {

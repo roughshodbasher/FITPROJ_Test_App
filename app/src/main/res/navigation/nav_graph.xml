@@ -39,6 +39,9 @@
         android:name="com.example.testapp.MapsFragment"
         android:label="@string/maps_fragment_label"
         tools:layout="@layout/fragment_maps">
+        <action
+            android:id="@+id/action_MapsFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/VehicleInfoFragment"

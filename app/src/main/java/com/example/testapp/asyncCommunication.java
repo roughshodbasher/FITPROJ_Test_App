@@ -38,6 +38,9 @@ public class asyncCommunication implements Runnable {
         Log.d(TAG,"HERE");
 
         output = gson.toJson(t);
+        output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
+        output = output.replace("\\","");
+        output = convertStandardJSONString(output);
         gotMessage = true;
 
     }
@@ -53,5 +56,13 @@ public class asyncCommunication implements Runnable {
 
     public Boolean finished() {
         return gotMessage;
+    }
+
+    public static String convertStandardJSONString(String data_json) {
+        data_json = data_json.replaceAll("\\\\r\\\\n", "");
+        data_json = data_json.replace("\"{", "{");
+        data_json = data_json.replace("}\",", "},");
+        data_json = data_json.replace("}\"", "}");
+        return data_json;
     }
 }

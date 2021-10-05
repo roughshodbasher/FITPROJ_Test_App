@@ -31,7 +31,7 @@ public class VehicleInfoFragment extends Fragment {
     private FragmentVehicleInfoBinding binding;
     private JSONObject vehicleInfoJSon;
     private String displayString;
-    private String[] carInfo = new String[6]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
+    private String[] carInfo = new String[7]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
 
     @Override
     public View onCreateView(
@@ -63,12 +63,12 @@ public class VehicleInfoFragment extends Fragment {
         binding.categoryText.setText(String.format(
                 // rego, vin, make, year, fuelConsumption, kilometers, engine;
                 "VIN:%s\n" +
-                        "Make:%s\n" +
-                        "Registration:%s\n" +
-                        "Year:%s\n" +
-                        "Fuel Consumption:%s\n" +
-                        "Kilometers:%s\n" +
-                        "Engine:%s",
+                "Make: %s\n" +
+                "Registration: %s\n" +
+                "Year: %s\n" +
+                "Fuel Consumption: %s\n" +
+                "Kilometers: %s\n" +
+                "Engine: %s",
                 carInfo[1], carInfo[2], carInfo[0], carInfo[3], carInfo[4], carInfo[5], carInfo[6]
         ));
 

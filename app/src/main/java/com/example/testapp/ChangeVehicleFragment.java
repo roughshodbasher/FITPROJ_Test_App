@@ -48,7 +48,7 @@ public class ChangeVehicleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         binding.changeVehicleButton.setOnClickListener(this::onClick);
         //get all regos from server
-        String allRegos = "{\"status\": 200, \"message\": [{\"registration\": \"ABC123\"}, {\"registration\": \"ABC234\"}, {\"registration\": \"ABC345\"}, {\"registration\": \"EFG897\"}, {\"registration\": \"EFO197\"}, {\"registration\": \"27MUGF\"}]}";
+        String allRegos = "{\"status\": 200, \"message\": [{\"registration\": \"ABC123\"}, {\"registration\": \"ABCDEF\"}, {\"registration\": \"EFG123\"}, {\"registration\": \"111KLM\"}, {\"registration\": \"12345F\"}, {\"registration\": \"PASWRD\"}]}";
         try {
             JSONObject tempJSON = new JSONObject(allRegos);
             JSONArray message = tempJSON.getJSONArray("message");
@@ -76,13 +76,47 @@ public class ChangeVehicleFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 if (s.length() == 6) {
                     //ask server for car's info
+                    String ip = "194.193.148.240";
+                    Integer port = 1024;
+                    JSONObject json = new JSONObject();
+                    JSONObject json_data = new JSONObject();
+                    try {
+                        json_data.put("rego",s.toString());
+                        json.put("type", 2);
+                        json.put("data",json_data);
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    asyncCommunication c = new asyncCommunication(ip,port,json,0);
+                    Thread thread = new Thread(c);
+                    thread.start();
+                    while (!c.finished()) {
+                        continue;
+                    }
+
+                    try {
+                        String response = c.getServerResponse();
+                        JSONObject jsonResponse = new JSONObject(response);
+                        JSONArray message = jsonResponse.getJSONArray("message");
+                        JSONObject vehicleInfo = message.getJSONObject(0);
+                        carInfo[0] = vehicleInfo.getString("registration");
+                        carInfo[1] = vehicleInfo.getString("vin");
+                        carInfo[2] = vehicleInfo.getString("make");
+                        carInfo[3] = String.valueOf(vehicleInfo.getInt("yr"));
+                        carInfo[4] = String.valueOf(vehicleInfo.getInt("fuel_cons"));
+                        carInfo[5] = vehicleInfo.getString("model");
+                        carInfo[6] = vehicleInfo.getString("eng");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     //put in variables (array)
                 binding.regoText.setText(String.format(
                         "VIN:%s\n" +
                         "Make:%s\n" +
                         "Year:%s\n" +
                         "Fuel Consumption:%s\n" +
-                        "Kilometers:%s\n" +
+                        "Model:%s\n" +
                         "Engine:%s",
                         carInfo[1], carInfo[2], carInfo[3], carInfo[4], carInfo[5], carInfo[6]
                 ));

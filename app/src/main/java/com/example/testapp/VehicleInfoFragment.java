@@ -1,17 +1,28 @@
 package com.example.testapp;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.testapp.databinding.FragmentVehicleInfoBinding;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +30,8 @@ public class VehicleInfoFragment extends Fragment {
 
     private FragmentVehicleInfoBinding binding;
     private JSONObject vehicleInfoJSon;
+    private String displayString;
+    private String[] carInfo = new String[6]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
 
     @Override
     public View onCreateView(
@@ -33,18 +46,31 @@ public class VehicleInfoFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        displayString = "VIN:\nMake:\nRegistration:\nYear:\nFuel Consumption:\nKilometers:\nEngine:";
         binding.newVehicleButton.setOnClickListener(this::onClick);
         binding.changeVehicleButton.setOnClickListener(this::onClick);
-        String vehicleInfo = "{'data': {'method': 'get', 'command': 'all_vehicle_info', 'rego': 'ABC123'}, 'name': 'Database', 'type': 1}";
-        try {
-            Toast.makeText(getContext(), "made JSON", Toast.LENGTH_SHORT).show();
-            JSONObject tempJSON = new JSONObject(vehicleInfo);
-            vehicleInfoJSon = new JSONObject(tempJSON.getString("data"));
-        } catch (JSONException e) {
-            Toast.makeText(getContext(), "no make", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
 
+        getParentFragmentManager().setFragmentResultListener("dataFromChange", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull @NotNull String requestKey, @NonNull @NotNull Bundle result) {
+                carInfo = result.getStringArray("carInfo");
+            }
+        });
+
+        if (carInfo == null) {
+            //get first car/some default car from server and put in carInfo array
+        }
+        binding.categoryText.setText(String.format(
+                // rego, vin, make, year, fuelConsumption, kilometers, engine;
+                "VIN:%s\n" +
+                        "Make:%s\n" +
+                        "Registration:%s\n" +
+                        "Year:%s\n" +
+                        "Fuel Consumption:%s\n" +
+                        "Kilometers:%s\n" +
+                        "Engine:%s",
+                carInfo[1], carInfo[2], carInfo[0], carInfo[3], carInfo[4], carInfo[5], carInfo[6]
+        ));
 
     }
 
@@ -55,12 +81,8 @@ public class VehicleInfoFragment extends Fragment {
                         .navigate(R.id.action_VehicleInfoFragment_to_NewVehicleInfoFragment);
                 break;
             case R.id.changeVehicleButton:
-                try {
-                    String text = vehicleInfoJSon.getString("rego");
-                    binding.categoryText.setText(text);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                NavHostFragment.findNavController(VehicleInfoFragment.this)
+                        .navigate(R.id.action_VehicleInfoFragment_to_ChangeVehicleFragment);
                 break;
         }
     }

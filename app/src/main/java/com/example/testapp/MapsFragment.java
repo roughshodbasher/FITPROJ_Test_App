@@ -84,6 +84,7 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mGoogleMap = googleMap;
             startLocationUpdates();
+            Log.d(TAG, "onMapReady: " + polyLine);
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -121,7 +122,9 @@ public class MapsFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener("dataFromStart", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull @NotNull String requestKey, @NonNull @NotNull Bundle result) {
+                Log.d(TAG, "onFragmentResult: set polyline");
                 polyLine = result.getString("polyLine");
+                Log.d(TAG, "onFragmentResult: poly" + polyLine);
             }
         });
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());

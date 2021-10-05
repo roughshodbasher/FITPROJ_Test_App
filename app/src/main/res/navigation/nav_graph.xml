@@ -51,10 +51,19 @@
         <action
             android:id="@+id/action_VehicleInfoFragment_to_NewVehicleInfoFragment"
             app:destination="@id/NewVehicleInfoFragment" />
+        <action
+            android:id="@+id/action_VehicleInfoFragment_to_ChangeVehicleFragment"
+            app:destination="@id/ChangeVehicleFragment" />
     </fragment>
     <fragment
         android:id="@+id/NewVehicleInfoFragment"
         android:name="com.example.testapp.NewVehicleInfoFragment"
+        android:label="@string/new_vehicle_info_fragment_label"
+        tools:layout="@layout/fragment_new_vehicle_info">
+    </fragment>
+    <fragment
+        android:id="@+id/ChangeVehicleFragment"
+        android:name="com.example.testapp.ChangeVehicleFragment"
         android:label="@string/new_vehicle_info_fragment_label"
         tools:layout="@layout/fragment_new_vehicle_info">
     </fragment>

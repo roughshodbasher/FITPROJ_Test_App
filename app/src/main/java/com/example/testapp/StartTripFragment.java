@@ -1,7 +1,5 @@
 package com.example.testapp;
 
-import static android.content.ContentValues.TAG;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
 public class StartTripFragment extends Fragment {
 
     private FragmentStartTripBinding binding;
@@ -64,7 +64,7 @@ public class StartTripFragment extends Fragment {
     private String currentAddress;
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String polyLine = "yganEtizpUmCia@tAmb@kDmc@eEa]hDuWgEa]pBwXsAsW";
+    private String polyLine = "knkmEh|vnUuAuCq@q@eBe@{Cg@eBCuEb@_GvA{Ar@gG`BiEz@oBbAgH~FsBnByCfBgOpOuDvDsBrCkHhKm@`@s@Hy@?AhBi@rG]rITlO?nIBly@Enr@@~A{CBqOJsD@gDRcE@a@?{AQaHF_JAmEe@gDCkET{HZuDH{DBaBQ}OB{BR{EBoC?qBBwBLkF?}KFs@??|@?v@@lFBbOBlV@vBc@?gABqABiRD_H@?mBjB?zIA?jB`MCpACfACb@??jA?z@@lAAfIBrM@jLD~\\@lCBnB[pAKb@[dBHjDDrEe@rEOr@@~@}@hC_DjHeFlJ{IjP}Uvi@yJjTuIxRaDpGu@hAeFvGkFjH_CvDoBpDu@~@w@?mAzBeEbKcA`DwEdNuDlJ_IrQgBdE}DjJiDnGuDdHsCvG}AzDwDvHeEtJyUvk@wBrFaK|TkG`MwM`XqNp[uFxL}DhHsG|JoDpE}JfKmTrTeBvByCrEiDxGoE|JyDrGiEjG_DrD{FlFqQnLs_@xUu[vRgO`KoBfAmKlH}ExCuB|@eIdD_Ch@iRdEgBPmAIwBm@MEa@HaCiAgGiC}E{B}NoHiLsFy_@kRcFyByJyCsSoGoWiI_I}CsOaHm@g@iCgAeFmBqHqBaFyAi@]]cA@YJo@nIxBHT|Bj@^LW`Bs@vCK\\}@vAc@Xy@Ic@q@@eA^k@r@K~Dz@vGlBxIpDtIlDpCjAj@CjFjBbGnBrEtAzQtFbQnFhHlCj\\hPrd@bUta@|Pn`@lP`T|ItD`BvJnDbPvDhKzA|Jx@rUf@jb@n@d_@f@|\\d@lHKr]w@l}@kBtBCbTm@vLy@lHmAlSuEfW}Gfh@yM~XsHzG{AxJyAbIkAzR{C~O_CdKkBfDiAtJgE~JwE|GkDlW{Ll\\}OnSkJrKeDtMsCxHcApJs@nQWbR@lT@~R?vLBpNI`C@fF^dDr@jGjCfDbCbDfDhBpBtDbDnC`BtF~Bf[bInLzCxRpHfI`D~EfAvG`@~BIjEg@~Aa@zDcBxMqHxAgAt@cApCsDjCwF|AkG^_I?qd@FaoAJ}eA?w]H_E?mIJwHOqG[iDw@sIC{ELmD`@_HP_b@@y`@D_e@Fw[@cGUuHBeBG{FByFr@aAPGr@@?{D?_EAqJEiJG_EAiGCoB?]h@?vA?wA?i@??eB?yAA}AAeJA_N@uMeUFqVHksAZ}\\Pmg@F}YJAgHIma@WakAQe_AMab@Gck@Cys@AgbAAmNEaEsK@?uN@cHA_@W?mD@s@AiBk@_BiBGM";
 
     @Override
     public View onCreateView(
@@ -128,7 +128,6 @@ public class StartTripFragment extends Fragment {
         startActivityForResult(autocompleteIntent, 100);
         switch (view.getId()) {
             case R.id.fromEditText:
-                Log.d(TAG, "onClickAuto: setting startlatlng to" + autocompleteLatLng);
                 startLatLng = autocompleteLatLng;
                 autocompleteEditText = binding.fromEditText;
                 break;
@@ -167,6 +166,7 @@ public class StartTripFragment extends Fragment {
                     data.put("start", startLatLng);
                     data.put("destinations", destinationListLatLng);
                     data.put("vehicle",binding.carAutoCompleteText.getText());
+                    json.put("name", "directions");
                     json.put("type", 0);
                     json.put("data", data);
                 } catch (JSONException e) {
@@ -208,7 +208,7 @@ public class StartTripFragment extends Fragment {
                 //ping location
                 //((MainActivity)getActivity()).startLocationService();
                 Bundle bundle = new Bundle();
-                bundle.putString("polyLine", polyLine);
+                bundle.putString("polyline", polyLine);
                 getParentFragmentManager().setFragmentResult("dataFromStart", bundle);
                 NavHostFragment.findNavController(StartTripFragment.this)
                         .navigate(R.id.action_StartTripFragment_to_MapsFragment);
@@ -237,7 +237,6 @@ public class StartTripFragment extends Fragment {
             Place place = Autocomplete.getPlaceFromIntent(data);
             autocompleteEditText.setText(place.getAddress());
             autocompleteLatLng = place.getLatLng();
-            Log.d(TAG, "onActivityResult: set autocompletelatlng" + autocompleteLatLng);
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Status status = Autocomplete.getStatusFromIntent(data);
             Toast.makeText(getContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();

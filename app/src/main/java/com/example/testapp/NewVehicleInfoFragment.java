@@ -59,6 +59,7 @@ public class NewVehicleInfoFragment extends Fragment {
 
 
 
+                    
                     // response from server
                     String response = "{\"message\":\"Vehicle added successfully\",\"status\":200}";
 

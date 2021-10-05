@@ -191,7 +191,7 @@ public class StartTripFragment extends Fragment {
 //                    continue;
 //                }
 //                Log.d(TAG,wj.strOutput);
-                /*-------------------------------------------------------
+
                 asyncCommunication c = new asyncCommunication(ip,port,json,0);
                 Thread thread = new Thread(c);
                 thread.start();
@@ -226,7 +226,7 @@ public class StartTripFragment extends Fragment {
 //                    polyLine = "delfFstytZm@Q`@MtChAb@~HcBhWwCtO_L|R}Q~}Wtf@ko@~lAyRdb@sCnRgBnWgAnIuEfJoPrMyFtNiP~r@R`g@qBv^wC|^}DfP{GpHgP|KoAjL@fCENO?EGsAOz@Ib@a@p@cMkCkCqi@cGuiBeSuEEmCpGwNlXqErXuFnKuNfHmOC_IhAkFjDgGnLcAvRrAvWaClIgGrG{SpQsD|GsDjY}BpVh@tGpD|Su@xXzIxRbGfYeFt^{JtNcNvLyFlFeC~GoE~d@gB`n@jObw@hDzV{ArUkHlx@}B|^p@`d@lFdc@~BhBbC_@dAmHqDeDqFFyOf@wNcDmd@sLqRuAcIVqXrBeMkEaT{K_QEkVjAmTkAeLiCvAcj@cBwXgFiPa@{EgIaHc@yAwF{Ji@gB^eDZyIuBuAeM{@_@jLvD`@bJh@d@KFAJLCRHvGpFxIb@jB|IlH^|E~G~T`@`RWjNo@zShEtClSnEvRfAhVkBnLfCdJdGbKzExGZzXeC`Qh@dUdFx[rIhL`ArEeGgBqk@r@o^|M}lAs@gWoGy]uJah@gA{l@rCohAdKu]~JmWbCoNpG_c@yDiYQ_KfDeZzDgUbNsMtReSfAsQ}AeT`@gFzDcMlH_HtOsBlOa@hH_EfFyHbHg_@lO_`GkSfGqIxQcIvy@aR~P_NtZaM`LeNvBsIb@sNeAq`@hBwLbRac@dRe_@bIsf@zKemAbUkm@rByHxDk`@zCyl@tGgdA`GiRzJeN`k@gf@hf@iu@ph@yk@|x@ucApu@ocA``@ai@nJoRnBuJlGgHhLLvUzHp`@lHd|P|WzS|PdHnpDnv@~Fzb@q@dr@zGlk@v@~lA|T|^fAn[eGd_@uEdYh@pV~Dzo@~Jhy@rJ|jAlMvz@xKlhMvS|TrN|_@xZ~sAfMv[r_@jk@dNfL~UjK`v@vMbWhA`VtFzb@vNzIp@`HkBdZ}Oj|@ZpUbFrThHzJ|@xDw@fA}EH_GQqAm@m@[XoAtBaA~A`A_BnAuBNSNEr@|@{AlGOlDCPAHJpAsCtAqNuBqMcEmY_H_t@_@mKt@}F|CsIzFyJ~DgMcAc_@aMkRoFuVaAyNwBit@qMwVwOcQeReVea@}HuR{Rww@uNeo@qJ}SwU_V{NmGcl@_KwuBkTqvAqRwPeDg_@{AsXhCqY`HsRbAwYwB{y@qO}a@sEqb@SqJaAu[{DcOGw`@l@e_AyJgKqBoMsGi[yV}MwGue@uJwTyAwMtEcZvZet@l`Amx@riAuKfQkCdToJhyAmJzzAgD|c@yEO]Yn@@\n";
                 }  catch (JSONException e) {
                     e.printStackTrace();
-                }-------------------------------------------------------*/
+                }
 //                polyLine = "delfFstytZm@Q`@MtChAb@~HcBhWwCtO_L|R}Q~}Wtf@ko@~lAyRdb@sCnRgBnWgAnIuEfJoPrMyFtNiP~r@R`g@qBv^wC|^}DfP{GpHgP|KoAjL@fCENO?EGsAOz@Ib@a@p@cMkCkCqi@cGuiBeSuEEmCpGwNlXqErXuFnKuNfHmOC_IhAkFjDgGnLcAvRrAvWaClIgGrG{SpQsD|GsDjY}BpVh@tGpD|Su@xXzIxRbGfYeFt^{JtNcNvLyFlFeC~GoE~d@gB`n@jObw@hDzV{ArUkHlx@}B|^p@`d@lFdc@~BhBbC_@dAmHqDeDqFFyOf@wNcDmd@sLqRuAcIVqXrBeMkEaT{K_QEkVjAmTkAeLiCvAcj@cBwXgFiPa@{EgIaHc@yAwF{Ji@gB^eDZyIuBuAeM{@_@jLvD`@bJh@d@KFAJLCRHvGpFxIb@jB|IlH^|E~G~T`@`RWjNo@zShEtClSnEvRfAhVkBnLfCdJdGbKzExGZzXeC`Qh@dUdFx[rIhL`ArEeGgBqk@r@o^|M}lAs@gWoGy]uJah@gA{l@rCohAdKu]~JmWbCoNpG_c@yDiYQ_KfDeZzDgUbNsMtReSfAsQ}AeT`@gFzDcMlH_HtOsBlOa@hH_EfFyHbHg_@lO_`GkSfGqIxQcIvy@aR~P_NtZaM`LeNvBsIb@sNeAq`@hBwLbRac@dRe_@bIsf@zKemAbUkm@rByHxDk`@zCyl@tGgdA`GiRzJeN`k@gf@hf@iu@ph@yk@|x@ucApu@ocA``@ai@nJoRnBuJlGgHhLLvUzHp`@lHd|P|WzS|PdHnpDnv@~Fzb@q@dr@zGlk@v@~lA|T|^fAn[eGd_@uEdYh@pV~Dzo@~Jhy@rJ|jAlMvz@xKlhMvS|TrN|_@xZ~sAfMv[r_@jk@dNfL~UjK`v@vMbWhA`VtFzb@vNzIp@`HkBdZ}Oj|@ZpUbFrThHzJ|@xDw@fA}EH_GQqAm@m@[XoAtBaA~A`A_BnAuBNSNEr@|@{AlGOlDCPAHJpAsCtAqNuBqMcEmY_H_t@_@mKt@}F|CsIzFyJ~DgMcAc_@aMkRoFuVaAyNwBit@qMwVwOcQeReVea@}HuR{Rww@uNeo@qJ}SwU_V{NmGcl@_KwuBkTqvAqRwPeDg_@{AsXhCqY`HsRbAwYwB{y@qO}a@sEqb@SqJaAu[{DcOGw`@l@e_AyJgKqBoMsGi[yV}MwGue@uJwTyAwMtEcZvZet@l`Amx@riAuKfQkCdToJhyAmJzzAgD|c@yEO]Yn@@\n";
 
                 //get route from server

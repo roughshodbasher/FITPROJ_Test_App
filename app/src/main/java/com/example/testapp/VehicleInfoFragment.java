@@ -94,8 +94,6 @@ public class VehicleInfoFragment extends Fragment {
                 carInfo[4] = String.valueOf(vehicleInfo.getInt("fuel_cons"));
                 carInfo[5] = vehicleInfo.getString("model");
                 carInfo[6] = vehicleInfo.getString("eng");
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }

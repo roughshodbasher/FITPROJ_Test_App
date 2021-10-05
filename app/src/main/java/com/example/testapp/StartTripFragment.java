@@ -1,5 +1,7 @@
 package com.example.testapp;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -48,8 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
-
 public class StartTripFragment extends Fragment {
 
     private FragmentStartTripBinding binding;
@@ -64,7 +64,7 @@ public class StartTripFragment extends Fragment {
     private String currentAddress;
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String polyLine = "knkmEh|vnUuAuCq@q@eBe@{Cg@eBCuEb@_GvA{Ar@gG`BiEz@oBbAgH~FsBnByCfBgOpOuDvDsBrCkHhKm@`@s@Hy@?AhBi@rG]rITlO?nIBly@Enr@@~A{CBqOJsD@gDRcE@a@?{AQaHF_JAmEe@gDCkET{HZuDH{DBaBQ}OB{BR{EBoC?qBBwBLkF?}KFs@??|@?v@@lFBbOBlV@vBc@?gABqABiRD_H@?mBjB?zIA?jB`MCpACfACb@??jA?z@@lAAfIBrM@jLD~\\@lCBnB[pAKb@[dBHjDDrEe@rEOr@@~@}@hC_DjHeFlJ{IjP}Uvi@yJjTuIxRaDpGu@hAeFvGkFjH_CvDoBpDu@~@w@?mAzBeEbKcA`DwEdNuDlJ_IrQgBdE}DjJiDnGuDdHsCvG}AzDwDvHeEtJyUvk@wBrFaK|TkG`MwM`XqNp[uFxL}DhHsG|JoDpE}JfKmTrTeBvByCrEiDxGoE|JyDrGiEjG_DrD{FlFqQnLs_@xUu[vRgO`KoBfAmKlH}ExCuB|@eIdD_Ch@iRdEgBPmAIwBm@MEa@HaCiAgGiC}E{B}NoHiLsFy_@kRcFyByJyCsSoGoWiI_I}CsOaHm@g@iCgAeFmBqHqBaFyAi@]]cA@YJo@nIxBHT|Bj@^LW`Bs@vCK\\}@vAc@Xy@Ic@q@@eA^k@r@K~Dz@vGlBxIpDtIlDpCjAj@CjFjBbGnBrEtAzQtFbQnFhHlCj\\hPrd@bUta@|Pn`@lP`T|ItD`BvJnDbPvDhKzA|Jx@rUf@jb@n@d_@f@|\\d@lHKr]w@l}@kBtBCbTm@vLy@lHmAlSuEfW}Gfh@yM~XsHzG{AxJyAbIkAzR{C~O_CdKkBfDiAtJgE~JwE|GkDlW{Ll\\}OnSkJrKeDtMsCxHcApJs@nQWbR@lT@~R?vLBpNI`C@fF^dDr@jGjCfDbCbDfDhBpBtDbDnC`BtF~Bf[bInLzCxRpHfI`D~EfAvG`@~BIjEg@~Aa@zDcBxMqHxAgAt@cApCsDjCwF|AkG^_I?qd@FaoAJ}eA?w]H_E?mIJwHOqG[iDw@sIC{ELmD`@_HP_b@@y`@D_e@Fw[@cGUuHBeBG{FByFr@aAPGr@@?{D?_EAqJEiJG_EAiGCoB?]h@?vA?wA?i@??eB?yAA}AAeJA_N@uMeUFqVHksAZ}\\Pmg@F}YJAgHIma@WakAQe_AMab@Gck@Cys@AgbAAmNEaEsK@?uN@cHA_@W?mD@s@AiBk@_BiBGM";
+    private String polyLine = "yganEtizpUmCia@tAmb@kDmc@eEa]hDuWgEa]pBwXsAsW";
 
     @Override
     public View onCreateView(
@@ -128,6 +128,7 @@ public class StartTripFragment extends Fragment {
         startActivityForResult(autocompleteIntent, 100);
         switch (view.getId()) {
             case R.id.fromEditText:
+                Log.d(TAG, "onClickAuto: setting startlatlng to" + autocompleteLatLng);
                 startLatLng = autocompleteLatLng;
                 autocompleteEditText = binding.fromEditText;
                 break;
@@ -166,14 +167,13 @@ public class StartTripFragment extends Fragment {
                     data.put("start", startLatLng);
                     data.put("destinations", destinationListLatLng);
                     data.put("vehicle",binding.carAutoCompleteText.getText());
-                    json.put("name", "directions");
                     json.put("type", 0);
                     json.put("data", data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                asyncCommunication c = new asyncCommunication(ip,port,json,1);
+                asyncCommunication c = new asyncCommunication(ip,port,json,0);
                 Thread thread = new Thread(c);
                 thread.start();
                 //c.doInBackground(null);
@@ -183,13 +183,24 @@ public class StartTripFragment extends Fragment {
                 //send destination to server
                 //get route from server
                 //get polyline from reply
-//                Log.d(TAG, "start button pressed");
-//                while (!c.finished()) {
-//                    continue;
-//                }
-//                Log.d(TAG, c.getServerResponse());
-//                Log.d(TAG, "HERE");
-//                MapsFragment.getInstance().addPolylinesToMap(polyLine);
+                Log.d(TAG, "start button pressed");
+
+                while (!c.finished()) {
+                    continue;
+                }
+                Log.d(TAG, c.getServerResponse());
+                try{
+                    JSONObject response = new JSONObject(c.getServerResponse());
+                    Log.d(TAG, (String) response.get("polyline"));
+                    polyLine = (String) response.get("polyline");
+                    polyLine.replaceAll("\\p{C}", "");
+//                    polyLine = "delfFstytZm@Q`@MtChAb@~HcBhWwCtO_L|R}Q~}Wtf@ko@~lAyRdb@sCnRgBnWgAnIuEfJoPrMyFtNiP~r@R`g@qBv^wC|^}DfP{GpHgP|KoAjL@fCENO?EGsAOz@Ib@a@p@cMkCkCqi@cGuiBeSuEEmCpGwNlXqErXuFnKuNfHmOC_IhAkFjDgGnLcAvRrAvWaClIgGrG{SpQsD|GsDjY}BpVh@tGpD|Su@xXzIxRbGfYeFt^{JtNcNvLyFlFeC~GoE~d@gB`n@jObw@hDzV{ArUkHlx@}B|^p@`d@lFdc@~BhBbC_@dAmHqDeDqFFyOf@wNcDmd@sLqRuAcIVqXrBeMkEaT{K_QEkVjAmTkAeLiCvAcj@cBwXgFiPa@{EgIaHc@yAwF{Ji@gB^eDZyIuBuAeM{@_@jLvD`@bJh@d@KFAJLCRHvGpFxIb@jB|IlH^|E~G~T`@`RWjNo@zShEtClSnEvRfAhVkBnLfCdJdGbKzExGZzXeC`Qh@dUdFx[rIhL`ArEeGgBqk@r@o^|M}lAs@gWoGy]uJah@gA{l@rCohAdKu]~JmWbCoNpG_c@yDiYQ_KfDeZzDgUbNsMtReSfAsQ}AeT`@gFzDcMlH_HtOsBlOa@hH_EfFyHbHg_@lO_`GkSfGqIxQcIvy@aR~P_NtZaM`LeNvBsIb@sNeAq`@hBwLbRac@dRe_@bIsf@zKemAbUkm@rByHxDk`@zCyl@tGgdA`GiRzJeN`k@gf@hf@iu@ph@yk@|x@ucApu@ocA``@ai@nJoRnBuJlGgHhLLvUzHp`@lHd|P|WzS|PdHnpDnv@~Fzb@q@dr@zGlk@v@~lA|T|^fAn[eGd_@uEdYh@pV~Dzo@~Jhy@rJ|jAlMvz@xKlhMvS|TrN|_@xZ~sAfMv[r_@jk@dNfL~UjK`v@vMbWhA`VtFzb@vNzIp@`HkBdZ}Oj|@ZpUbFrThHzJ|@xDw@fA}EH_GQqAm@m@[XoAtBaA~A`A_BnAuBNSNEr@|@{AlGOlDCPAHJpAsCtAqNuBqMcEmY_H_t@_@mKt@}F|CsIzFyJ~DgMcAc_@aMkRoFuVaAyNwBit@qMwVwOcQeReVea@}HuR{Rww@uNeo@qJ}SwU_V{NmGcl@_KwuBkTqvAqRwPeDg_@{AsXhCqY`HsRbAwYwB{y@qO}a@sEqb@SqJaAu[{DcOGw`@l@e_AyJgKqBoMsGi[yV}MwGue@uJwTyAwMtEcZvZet@l`Amx@riAuKfQkCdToJhyAmJzzAgD|c@yEO]Yn@@\n";
+                }  catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                polyLine = "delfFstytZm@Q`@MtChAb@~HcBhWwCtO_L|R}Q~}Wtf@ko@~lAyRdb@sCnRgBnWgAnIuEfJoPrMyFtNiP~r@R`g@qBv^wC|^}DfP{GpHgP|KoAjL@fCENO?EGsAOz@Ib@a@p@cMkCkCqi@cGuiBeSuEEmCpGwNlXqErXuFnKuNfHmOC_IhAkFjDgGnLcAvRrAvWaClIgGrG{SpQsD|GsDjY}BpVh@tGpD|Su@xXzIxRbGfYeFt^{JtNcNvLyFlFeC~GoE~d@gB`n@jObw@hDzV{ArUkHlx@}B|^p@`d@lFdc@~BhBbC_@dAmHqDeDqFFyOf@wNcDmd@sLqRuAcIVqXrBeMkEaT{K_QEkVjAmTkAeLiCvAcj@cBwXgFiPa@{EgIaHc@yAwF{Ji@gB^eDZyIuBuAeM{@_@jLvD`@bJh@d@KFAJLCRHvGpFxIb@jB|IlH^|E~G~T`@`RWjNo@zShEtClSnEvRfAhVkBnLfCdJdGbKzExGZzXeC`Qh@dUdFx[rIhL`ArEeGgBqk@r@o^|M}lAs@gWoGy]uJah@gA{l@rCohAdKu]~JmWbCoNpG_c@yDiYQ_KfDeZzDgUbNsMtReSfAsQ}AeT`@gFzDcMlH_HtOsBlOa@hH_EfFyHbHg_@lO_`GkSfGqIxQcIvy@aR~P_NtZaM`LeNvBsIb@sNeAq`@hBwLbRac@dRe_@bIsf@zKemAbUkm@rByHxDk`@zCyl@tGgdA`GiRzJeN`k@gf@hf@iu@ph@yk@|x@ucApu@ocA``@ai@nJoRnBuJlGgHhLLvUzHp`@lHd|P|WzS|PdHnpDnv@~Fzb@q@dr@zGlk@v@~lA|T|^fAn[eGd_@uEdYh@pV~Dzo@~Jhy@rJ|jAlMvz@xKlhMvS|TrN|_@xZ~sAfMv[r_@jk@dNfL~UjK`v@vMbWhA`VtFzb@vNzIp@`HkBdZ}Oj|@ZpUbFrThHzJ|@xDw@fA}EH_GQqAm@m@[XoAtBaA~A`A_BnAuBNSNEr@|@{AlGOlDCPAHJpAsCtAqNuBqMcEmY_H_t@_@mKt@}F|CsIzFyJ~DgMcAc_@aMkRoFuVaAyNwBit@qMwVwOcQeReVea@}HuR{Rww@uNeo@qJ}SwU_V{NmGcl@_KwuBkTqvAqRwPeDg_@{AsXhCqY`HsRbAwYwB{y@qO}a@sEqb@SqJaAu[{DcOGw`@l@e_AyJgKqBoMsGi[yV}MwGue@uJwTyAwMtEcZvZet@l`Amx@riAuKfQkCdToJhyAmJzzAgD|c@yEO]Yn@@\n";
+
+                //MapsFragment.getInstance().addPolylinesToMap(polyLine);
                 //MapsFragment.getInstance().readyRoute(c.output);
                 //MapsFragment.getInstance().setPolyLine(polyLine);
                 //get route from server
@@ -197,7 +208,7 @@ public class StartTripFragment extends Fragment {
                 //ping location
                 //((MainActivity)getActivity()).startLocationService();
                 Bundle bundle = new Bundle();
-                bundle.putString("polyline", polyLine);
+                bundle.putString("polyLine", polyLine);
                 getParentFragmentManager().setFragmentResult("dataFromStart", bundle);
                 NavHostFragment.findNavController(StartTripFragment.this)
                         .navigate(R.id.action_StartTripFragment_to_MapsFragment);
@@ -226,6 +237,7 @@ public class StartTripFragment extends Fragment {
             Place place = Autocomplete.getPlaceFromIntent(data);
             autocompleteEditText.setText(place.getAddress());
             autocompleteLatLng = place.getLatLng();
+            Log.d(TAG, "onActivityResult: set autocompletelatlng" + autocompleteLatLng);
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Status status = Autocomplete.getStatusFromIntent(data);
             Toast.makeText(getContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();

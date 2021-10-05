@@ -1,39 +1,21 @@
 package com.example.testapp;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.JsonReader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.testapp.databinding.FragmentVehicleInfoBinding;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class VehicleInfoFragment extends Fragment {
 
@@ -77,13 +59,22 @@ public class VehicleInfoFragment extends Fragment {
             JSONObject json_data = new JSONObject();
             try {
                 json_data.put("rego","ABC123");
-
+                json.put("type", 2);
+                json.put("data",json_data);
             }
             catch (JSONException e) {
                 e.printStackTrace();
             }
+            asyncCommunication c = new asyncCommunication(ip,port,json,0);
+            Thread thread = new Thread(c);
+            thread.start();
+            while (!c.finished()) {
+                continue;
+            }
+
             try {
-                String response = "{\"message\":[{\"trucktype\":null,\"yr\":2020,\"registration\":\"ABC123\",\"vin\":\"1234abcd5678efghi\",\"veh_id\":14,\"model\":\"Ranger\",\"fuel_type\":\"PETROL\",\"veh_type_id\":14,\"make\":\"Ford\",\"fuel_cons\":100,\"emissions\":371,\"eng\":\"engine\"}],\"status\":200}";
+//                String response = "{\"message\":[{\"trucktype\":null,\"yr\":2020,\"registration\":\"ABC123\",\"vin\":\"1234abcd5678efghi\",\"veh_id\":14,\"model\":\"Ranger\",\"fuel_type\":\"PETROL\",\"veh_type_id\":14,\"make\":\"Ford\",\"fuel_cons\":100,\"emissions\":371,\"eng\":\"engine\"}],\"status\":200}";
+                String response = c.getServerResponse();
                 JSONObject jsonResponse = new JSONObject(response);
                 JSONArray message = jsonResponse.getJSONArray("message");
                 JSONObject vehicleInfo = message.getJSONObject(0);

@@ -98,21 +98,20 @@
         />
 
     <TextView
-        android:id="@+id/kilometersText"
+        android:id="@+id/modelText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kilometers:"
-        app:layout_constraintTop_toBottomOf="@id/fuelConsumptionEditText"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Model:"
         android:textSize="18dp"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fuelConsumptionEditText" />
 
     <EditText
         android:layout_width="200dp"
         android:layout_height="40dp"
-        app:layout_constraintStart_toStartOf="@+id/kilometersText"
-        app:layout_constraintTop_toBottomOf="@+id/kilometersText"
-        android:id="@+id/kilometersEditText"
+        app:layout_constraintStart_toStartOf="@+id/modelText"
+        app:layout_constraintTop_toBottomOf="@+id/modelText"
+        android:id="@+id/modelEditText"
         />
 
     <TextView
@@ -120,10 +119,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Engine:"
-        app:layout_constraintTop_toBottomOf="@id/kilometersEditText"
+        app:layout_constraintTop_toBottomOf="@id/modelEditText"
         app:layout_constraintStart_toStartOf="parent"
         android:textSize="18dp"
         />
+
+    <TextView
+        android:id="@+id/fuelTypeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel Type:"
+        android:textSize="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/engineEditText" />
+
+    <TextView
+        android:id="@+id/emissionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Emission:"
+        android:textSize="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fuelEngineEditText" />
 
     <EditText
         android:layout_width="200dp"
@@ -132,6 +149,21 @@
         app:layout_constraintTop_toBottomOf="@+id/engineText"
         android:id="@+id/engineEditText"
         />
+
+
+    <EditText
+        android:id="@+id/fuelEngineEditText"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="@+id/engineText"
+        app:layout_constraintTop_toBottomOf="@+id/fuelTypeText" />
+
+    <EditText
+        android:id="@+id/emissionEditText"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="@+id/engineText"
+        app:layout_constraintTop_toBottomOf="@+id/emissionText" />
 
     <Button
         android:id="@+id/addVehicleButton"

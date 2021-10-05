@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -44,9 +46,11 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 
@@ -65,6 +69,7 @@ public class StartTripFragment extends Fragment {
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private String polyLine = "knkmEh|vnUuAuCq@q@eBe@{Cg@eBCuEb@_GvA{Ar@gG`BiEz@oBbAgH~FsBnByCfBgOpOuDvDsBrCkHhKm@`@s@Hy@?AhBi@rG]rITlO?nIBly@Enr@@~A{CBqOJsD@gDRcE@a@?{AQaHF_JAmEe@gDCkET{HZuDH{DBaBQ}OB{BR{EBoC?qBBwBLkF?}KFs@??|@?v@@lFBbOBlV@vBc@?gABqABiRD_H@?mBjB?zIA?jB`MCpACfACb@??jA?z@@lAAfIBrM@jLD~\\@lCBnB[pAKb@[dBHjDDrEe@rEOr@@~@}@hC_DjHeFlJ{IjP}Uvi@yJjTuIxRaDpGu@hAeFvGkFjH_CvDoBpDu@~@w@?mAzBeEbKcA`DwEdNuDlJ_IrQgBdE}DjJiDnGuDdHsCvG}AzDwDvHeEtJyUvk@wBrFaK|TkG`MwM`XqNp[uFxL}DhHsG|JoDpE}JfKmTrTeBvByCrEiDxGoE|JyDrGiEjG_DrD{FlFqQnLs_@xUu[vRgO`KoBfAmKlH}ExCuB|@eIdD_Ch@iRdEgBPmAIwBm@MEa@HaCiAgGiC}E{B}NoHiLsFy_@kRcFyByJyCsSoGoWiI_I}CsOaHm@g@iCgAeFmBqHqBaFyAi@]]cA@YJo@nIxBHT|Bj@^LW`Bs@vCK\\}@vAc@Xy@Ic@q@@eA^k@r@K~Dz@vGlBxIpDtIlDpCjAj@CjFjBbGnBrEtAzQtFbQnFhHlCj\\hPrd@bUta@|Pn`@lP`T|ItD`BvJnDbPvDhKzA|Jx@rUf@jb@n@d_@f@|\\d@lHKr]w@l}@kBtBCbTm@vLy@lHmAlSuEfW}Gfh@yM~XsHzG{AxJyAbIkAzR{C~O_CdKkBfDiAtJgE~JwE|GkDlW{Ll\\}OnSkJrKeDtMsCxHcApJs@nQWbR@lT@~R?vLBpNI`C@fF^dDr@jGjCfDbCbDfDhBpBtDbDnC`BtF~Bf[bInLzCxRpHfI`D~EfAvG`@~BIjEg@~Aa@zDcBxMqHxAgAt@cApCsDjCwF|AkG^_I?qd@FaoAJ}eA?w]H_E?mIJwHOqG[iDw@sIC{ELmD`@_HP_b@@y`@D_e@Fw[@cGUuHBeBG{FByFr@aAPGr@@?{D?_EAqJEiJG_EAiGCoB?]h@?vA?wA?i@??eB?yAA}AAeJA_N@uMeUFqVHksAZ}\\Pmg@F}YJAgHIma@WakAQe_AMab@Gck@Cys@AgbAAmNEaEsK@?uN@cHA_@W?mD@s@AiBk@_BiBGM";
+    private boolean fromPressed = false;
 
     @Override
     public View onCreateView(
@@ -125,10 +130,13 @@ public class StartTripFragment extends Fragment {
     }
 
     public void onClickAuto(View view) {
+        Log.d(TAG, "onClickAuto: on click auto");
+        autocompleteLatLng = null;
         startActivityForResult(autocompleteIntent, 100);
         switch (view.getId()) {
             case R.id.fromEditText:
-                startLatLng = autocompleteLatLng;
+                fromPressed = true;
+                //startLatLng = autocompleteLatLng;
                 autocompleteEditText = binding.fromEditText;
                 break;
             case R.id.destinationsEditText:
@@ -140,10 +148,14 @@ public class StartTripFragment extends Fragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.addDestinationButton:
-                destinationListStr.add(binding.destinationsEditText.getText().toString());
-                destinationListLatLng.add(autocompleteLatLng);
-                binding.destinationsEditText.setText("");
-                destinationListAdapter.notifyDataSetChanged();
+                if (binding.destinationsEditText.getText().toString() != "") {
+                    destinationListStr.add(binding.destinationsEditText.getText().toString());
+                    destinationListLatLng.add(autocompleteLatLng);
+                    binding.destinationsEditText.setText("");
+                    destinationListAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "MISSING FIELDS", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.currentLocationButton:
                 ((MainActivity)getActivity()).getLocation();
@@ -155,7 +167,7 @@ public class StartTripFragment extends Fragment {
                 //send destination to server
                 Log.d(TAG, "start location:" + startLatLng +
                         " destinations:" + destinationListLatLng.toString() +
-                        " car rego: " + binding.carAutoCompleteText.getText());
+                        " car rego: " + binding.carAutoCompleteText.getText().toString());
                 String ip = "194.193.148.240";
 //                ip = "localhost";
 
@@ -179,6 +191,7 @@ public class StartTripFragment extends Fragment {
 //                    continue;
 //                }
 //                Log.d(TAG,wj.strOutput);
+
                 asyncCommunication c = new asyncCommunication(ip,port,json,0);
                 Thread thread = new Thread(c);
                 thread.start();
@@ -216,14 +229,12 @@ public class StartTripFragment extends Fragment {
                 }
 //                polyLine = "delfFstytZm@Q`@MtChAb@~HcBhWwCtO_L|R}Q~}Wtf@ko@~lAyRdb@sCnRgBnWgAnIuEfJoPrMyFtNiP~r@R`g@qBv^wC|^}DfP{GpHgP|KoAjL@fCENO?EGsAOz@Ib@a@p@cMkCkCqi@cGuiBeSuEEmCpGwNlXqErXuFnKuNfHmOC_IhAkFjDgGnLcAvRrAvWaClIgGrG{SpQsD|GsDjY}BpVh@tGpD|Su@xXzIxRbGfYeFt^{JtNcNvLyFlFeC~GoE~d@gB`n@jObw@hDzV{ArUkHlx@}B|^p@`d@lFdc@~BhBbC_@dAmHqDeDqFFyOf@wNcDmd@sLqRuAcIVqXrBeMkEaT{K_QEkVjAmTkAeLiCvAcj@cBwXgFiPa@{EgIaHc@yAwF{Ji@gB^eDZyIuBuAeM{@_@jLvD`@bJh@d@KFAJLCRHvGpFxIb@jB|IlH^|E~G~T`@`RWjNo@zShEtClSnEvRfAhVkBnLfCdJdGbKzExGZzXeC`Qh@dUdFx[rIhL`ArEeGgBqk@r@o^|M}lAs@gWoGy]uJah@gA{l@rCohAdKu]~JmWbCoNpG_c@yDiYQ_KfDeZzDgUbNsMtReSfAsQ}AeT`@gFzDcMlH_HtOsBlOa@hH_EfFyHbHg_@lO_`GkSfGqIxQcIvy@aR~P_NtZaM`LeNvBsIb@sNeAq`@hBwLbRac@dRe_@bIsf@zKemAbUkm@rByHxDk`@zCyl@tGgdA`GiRzJeN`k@gf@hf@iu@ph@yk@|x@ucApu@ocA``@ai@nJoRnBuJlGgHhLLvUzHp`@lHd|P|WzS|PdHnpDnv@~Fzb@q@dr@zGlk@v@~lA|T|^fAn[eGd_@uEdYh@pV~Dzo@~Jhy@rJ|jAlMvz@xKlhMvS|TrN|_@xZ~sAfMv[r_@jk@dNfL~UjK`v@vMbWhA`VtFzb@vNzIp@`HkBdZ}Oj|@ZpUbFrThHzJ|@xDw@fA}EH_GQqAm@m@[XoAtBaA~A`A_BnAuBNSNEr@|@{AlGOlDCPAHJpAsCtAqNuBqMcEmY_H_t@_@mKt@}F|CsIzFyJ~DgMcAc_@aMkRoFuVaAyNwBit@qMwVwOcQeReVea@}HuR{Rww@uNeo@qJ}SwU_V{NmGcl@_KwuBkTqvAqRwPeDg_@{AsXhCqY`HsRbAwYwB{y@qO}a@sEqb@SqJaAu[{DcOGw`@l@e_AyJgKqBoMsGi[yV}MwGue@uJwTyAwMtEcZvZet@l`Amx@riAuKfQkCdToJhyAmJzzAgD|c@yEO]Yn@@\n";
 
-                //MapsFragment.getInstance().addPolylinesToMap(polyLine);
-                //MapsFragment.getInstance().readyRoute(c.output);
-                //MapsFragment.getInstance().setPolyLine(polyLine);
                 //get route from server
                 //get polyline from reply
                 //ping location
                 //((MainActivity)getActivity()).startLocationService();
                 Bundle bundle = new Bundle();
+                Log.d(TAG, "onClick: poly" + polyLine);
                 bundle.putString("polyline", polyLine);
                 getParentFragmentManager().setFragmentResult("dataFromStart", bundle);
                 NavHostFragment.findNavController(StartTripFragment.this)
@@ -232,27 +243,18 @@ public class StartTripFragment extends Fragment {
         }
     }
 
-    private boolean isConnected(StartTripFragment startTripFragment) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo wifiConn = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mobileConn = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-        if ((wifiConn != null && wifiConn.isConnected()) || (mobileConn != null && mobileConn.isConnected())) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100 && resultCode == -1) {
             Place place = Autocomplete.getPlaceFromIntent(data);
+            if (fromPressed) {
+                startLatLng = place.getLatLng();
+                fromPressed = false;
+            } else {
+                autocompleteLatLng = place.getLatLng();
+            }
             autocompleteEditText.setText(place.getAddress());
-            autocompleteLatLng = place.getLatLng();
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Status status = Autocomplete.getStatusFromIntent(data);
             Toast.makeText(getContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
@@ -276,8 +278,19 @@ public class StartTripFragment extends Fragment {
                 if (task.isSuccessful()) {
                     Location location = task.getResult();
                     GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    startLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     Log.d(TAG, "getLocation" + geoPoint.toString());
-                    Toast.makeText(getContext(), location.getLatitude() + "-" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                    try {
+                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        String address = addresses.get(0).getAddressLine(0);
+                        binding.fromEditText.setText(address);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (IOException eio) {
+                        eio.printStackTrace();
+                        System.out.println(eio.getMessage());
+                    }
                 } else {
                     Log.d(TAG, "get location FAILED");
                     Toast.makeText(getContext(), "get location FAILED", Toast.LENGTH_SHORT).show();

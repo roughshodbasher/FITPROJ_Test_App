@@ -141,6 +141,17 @@ public class MapsFragment extends Fragment {
             Location location = locationResult.getLastLocation();
             //send location to server
             //receive info from server
+            String ip = "194.193.148.240";
+            Integer port = 1024;
+            asyncCommunication c = new asyncCommunication(ip,port,null,2);
+            Thread thread = new Thread(c);
+            thread.start();
+//            while (!c.finished()) {
+//                    continue;
+//            }
+            Log.d(TAG, c.getServerResponse());
+
+
             LatLng tempLatLng = new LatLng(location.getLatitude(), location.getLongitude());
             //if server says on track
             if (currentLatLng != null && currentLatLng != tempLatLng) {

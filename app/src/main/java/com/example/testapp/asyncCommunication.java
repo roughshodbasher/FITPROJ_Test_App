@@ -16,13 +16,15 @@ public class asyncCommunication implements Runnable {
     String ip;
     Integer port;
     String output;
+    Integer type;
 
     Boolean gotMessage = false;
     JSONObject message;
-    asyncCommunication(String ip, Integer port, JSONObject message) {
+    asyncCommunication(String ip, Integer port, JSONObject message, Integer type) {
         this.ip = ip;
         this.port = port;
         this.message = message;
+        this.type = type;
     }
 
     @Override
@@ -30,24 +32,37 @@ public class asyncCommunication implements Runnable {
         Gson gson = new Gson();
         commuication s = new commuication();
         s.connect(this.ip,this.port);
-        s.sendMessage(this.message.toString());
+        // Send recv
+        if (this.type == 0) {
+            s.sendMessage(this.message.toString());
 
-        String t = s.getMessage();
-        //s.disconnect();
-        Log.d(TAG, t);
-        Log.d(TAG,"HERE");
+            String t = s.getMessage();
+            output = gson.toJson(t);
+            output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
+            output = output.replace("\\","");
+            this.output = convertStandardJSONString(output);
+            this.gotMessage = true;
+        }
+        // Send
+        else if (this.type == 1) {
+            s.sendMessage(this.message.toString());
 
-        output = gson.toJson(t);
-        output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
-        output = output.replace("\\","");
-        output = convertStandardJSONString(output);
-        gotMessage = true;
-
+        }
+        // recv
+        else if (this.type == 2) {
+            String t = s.getMessage();
+            output = gson.toJson(t);
+            output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
+            output = output.replace("\\","");
+            output = convertStandardJSONString(output);
+            this.gotMessage = true;
+        }
+        s.disconnect();
     }
 
     public String getServerResponse() {
-        if (gotMessage) {
-            return output;
+        if (this.gotMessage) {
+            return this.output;
         }
         else {
             return "";

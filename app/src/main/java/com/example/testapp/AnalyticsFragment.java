@@ -160,7 +160,7 @@ public class AnalyticsFragment extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
-        asyncCommunication c = new asyncCommunication(ip,port,json);
+        asyncCommunication c = new asyncCommunication(ip,port,json,0);
         Thread thread = new Thread(c);
         thread.start();
         while (!c.finished()) {

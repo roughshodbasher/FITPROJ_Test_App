@@ -173,7 +173,7 @@ public class StartTripFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-                asyncCommunication c = new asyncCommunication(ip,port,json);
+                asyncCommunication c = new asyncCommunication(ip,port,json,1);
                 Thread thread = new Thread(c);
                 thread.start();
                 //c.doInBackground(null);
@@ -183,18 +183,22 @@ public class StartTripFragment extends Fragment {
                 //send destination to server
                 //get route from server
                 //get polyline from reply
-                Log.d(TAG, "start button pressed");
-                while (!c.finished()) {
-                    continue;
-                }
-                Log.d(TAG, c.getServerResponse());
-                //MapsFragment.getInstance().addPolylinesToMap(polyLine);
-                MapsFragment.getInstance().readyRoute(c.output);
+//                Log.d(TAG, "start button pressed");
+//                while (!c.finished()) {
+//                    continue;
+//                }
+//                Log.d(TAG, c.getServerResponse());
+//                Log.d(TAG, "HERE");
+//                MapsFragment.getInstance().addPolylinesToMap(polyLine);
+                //MapsFragment.getInstance().readyRoute(c.output);
                 //MapsFragment.getInstance().setPolyLine(polyLine);
                 //get route from server
                 //get polyline from reply
                 //ping location
                 //((MainActivity)getActivity()).startLocationService();
+                Bundle bundle = new Bundle();
+                bundle.putString("polyline", polyLine);
+                getParentFragmentManager().setFragmentResult("dataFromStart", bundle);
                 NavHostFragment.findNavController(StartTripFragment.this)
                         .navigate(R.id.action_StartTripFragment_to_MapsFragment);
                 break;

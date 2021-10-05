@@ -1,14 +1,12 @@
 package com.example.testapp;
 
-import android.util.Log;
+import static android.content.ContentValues.TAG;
 
-import org.json.JSONObject;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.util.List;
-
-import static android.content.ContentValues.TAG;
+import org.json.JSONObject;
 
 //private static class
 
@@ -40,7 +38,7 @@ public class asyncCommunication implements Runnable {
             output = gson.toJson(t);
             Log.d(TAG,output);
             output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
-            output = output.replace("\\","");
+            output = output.replace("\\\"","\"");
             this.output = convertStandardJSONString(output);
             this.gotMessage = true;
         }

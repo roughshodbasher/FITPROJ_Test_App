@@ -37,7 +37,8 @@ public class asyncCommunication implements Runnable {
             String t = s.getMessage();
             output = gson.toJson(t);
             Log.d(TAG,output);
-            output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
+            output = output.substring(output.indexOf('{'));
+//            output = output.substring(output.indexOf('{'),output.lastIndexOf('}')+1);
             output = output.replace("\\\"","\"");
             this.output = convertStandardJSONString(output);
             this.gotMessage = true;

@@ -48,7 +48,7 @@ public class VehicleInfoFragment extends Fragment {
             }
         });
 
-        if (carInfo[0] == null) {
+        if (carInfo[0] == null || true) {
             //get first car/some default car from server and put in carInfo array
             // use vehicle ABC123 as default car
 
@@ -58,7 +58,7 @@ public class VehicleInfoFragment extends Fragment {
             JSONObject json = new JSONObject();
             JSONObject json_data = new JSONObject();
             try {
-                json_data.put("rego","ABC123");
+                json_data.put("rego","ABCDEF");
                 json.put("type", 2);
                 json.put("data",json_data);
             }

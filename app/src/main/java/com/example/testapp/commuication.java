@@ -1,13 +1,14 @@
 package com.example.testapp;
-import android.os.AsyncTask;
+import static android.content.ContentValues.TAG;
+
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-
-import static android.content.ContentValues.TAG;
 
 public class commuication {
 
@@ -21,6 +22,8 @@ public class commuication {
             try {
 
                 s = new Socket(ip,port);
+                // timesout after a minute
+
                 dOut = new DataOutputStream(s.getOutputStream());
                 dIn = new DataInputStream(s.getInputStream());
                 return true;
@@ -59,18 +62,7 @@ public class commuication {
         public String getMessage() {
             byte[] b = new byte[0];
             try {
-//                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-//                //out.println(json);
-//                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-//                while (!in.ready()) {
-//                    continue;
-//                }
-////                String response = in.readLine();
-////                return response;
-//
-//                int byteRed = dIn.read(b);
-//                String s = new String(b,"UTF-8");
-//                return s;
+
                 InputStream in = null;
                 in = s.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(in));

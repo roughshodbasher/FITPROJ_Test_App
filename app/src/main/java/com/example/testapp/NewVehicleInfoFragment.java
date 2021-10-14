@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.testapp.databinding.FragmentNewVehicleInfoBinding;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -55,13 +54,21 @@ public class NewVehicleInfoFragment extends Fragment {
                     json.put("data", json_data);
 
 
-                    json.put("type", 1);
+                    json.put("type", 3);
+                    json.put("data", json_data);
 
-
+                    String ip = "194.193.148.240";
+                    Integer port = 1024;
+                    asyncCommunication c = new asyncCommunication(ip,port,json,0);
+                    Thread thread = new Thread(c);
+                    thread.start();
+                    while (!c.finished()) {
+                        continue;
+                    }
 
                     
                     // response from server
-                    String response = "{\"message\":\"Vehicle added successfully\",\"status\":200}";
+                    String response = c.getServerResponse();
 
                     JSONObject jsonResponse = new JSONObject(response);
                     String message = jsonResponse.getString("message");

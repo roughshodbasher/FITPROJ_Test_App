@@ -31,7 +31,7 @@ public class ChangeVehicleFragment extends Fragment {
     private String carJSON;
     private JSONObject carRegoJSON;
     private List<String> carRegoList = new ArrayList<String>();
-    private String[] carInfo = new String[6]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
+    private String[] carInfo = new String[7]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
 
     @Override
     public View onCreateView(

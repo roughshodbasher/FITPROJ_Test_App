@@ -75,7 +75,15 @@ public class locationCommunication implements Runnable {
                         response = convertStandardJSONString(response);
                         try {
                             JSONObject r = new JSONObject(response);
-                            this.output = (String) r.get("polyline");
+                            // doenst return polyline returns Int array cause python doesnt like escape characters
+                            String[] raw = ((String) r.get("polyline")).split("-");
+                            String poly = "";
+                            for (Integer i = 0; i < raw.length; i++) {
+                                int v = (Integer.valueOf(raw[i]));
+                                char w = (char) v;
+                                poly = poly + w;
+                            }
+                            this.output = poly;
                             this.actionNeeded = true;
                         } catch (JSONException e) {
                             e.printStackTrace();

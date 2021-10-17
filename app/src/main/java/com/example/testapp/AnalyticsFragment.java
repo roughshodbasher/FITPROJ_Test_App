@@ -47,8 +47,11 @@ public class AnalyticsFragment extends Fragment {
     private int year = cal.get(Calendar.YEAR);
     private int month = cal.get(Calendar.MONTH);
     private int date = cal.get(Calendar.DAY_OF_MONTH);
+    // aList is a list that contains trips to be displayed on UI
     private List<String> aList = new ArrayList<String>();
+    // bList contains the emissions of the trips
     private List<Entry> bList = new ArrayList<Entry>();
+    // tripData is used to store the trips temporarily while parsing
     private ArrayList<String[]> tripData =  new ArrayList<>();
     private ArrayAdapter<String> aListAdapter;
 
@@ -87,19 +90,19 @@ public class AnalyticsFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //binding.dateSet.setOnClickListener(this::onClick);
+        // set the click listeners for the start and end date picker
         binding.startInput.setOnClickListener(this::onClick);
         binding.endInput.setOnClickListener(this::onClick);
+        // set the click listener for the get button, this will call the server to get the trips from the two dates
         binding.getBtn.setOnClickListener(this::onClick);
+        // initialise the list adapter to display the trips
         aListAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, aList);
         binding.tripsList.setAdapter(aListAdapter);
     }
 
     private void onClick(View view) {
+        // call different functions based on what button user clicked
         switch (view.getId()) {
-            //case R.id.dateSet:
-                //btnMonthYear(view);
-                //break;
             case R.id.startInput:
                 btnDate(view, "Select start date", binding.startInput);
                 break;
@@ -119,10 +122,20 @@ public class AnalyticsFragment extends Fragment {
     }
 
 
+    /*reference: https://www.youtube.com/watch?v=U95yWPKe5UY
+     this is the date picker that allows user to pick a date
+     It takes in:
+     -the view, this is the view to display the date picker
+     -a string, title, this is the title to display on the picker, e.g. select a start date or
+     select an end date
+     -a textview, this will be the view to display the date after user has selected one
+     */
     private void btnDate(View view, String title, TextView textView){
         DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener(){
             @Override
             public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
+                // after user has selected a date, set the calendar to that date, and display it on
+                // the UI using the dateFormat, i.e display in the format: yyyy-mm-dd
                 cal.set(selectedYear, selectedMonth, selectedDay);
                 textView.setText(dateFormat.format(cal.getTime()));
             }
@@ -131,8 +144,10 @@ public class AnalyticsFragment extends Fragment {
         datePickerDialog.show();
     }
 
+    // this is the function that will call the server and retrieve trips between startDate and endDate
     private void getTripInfo(){
-        // check if user has entered both start and end dates, if not, show a toast and return
+        // check if user has entered both start and end dates, if not, show a toast notifying the user to
+        // select the dates and return
         String startDate = (String) binding.startInput.getText();
         String endDate = (String) binding.endInput.getText();
         try {
@@ -145,7 +160,6 @@ public class AnalyticsFragment extends Fragment {
         }
 
         // send request to server for trips between two dates
-
         String ip = "194.193.148.240";
         Integer port = 1024;
         JSONObject json = new JSONObject();
@@ -179,30 +193,39 @@ public class AnalyticsFragment extends Fragment {
 //        response = response.replace("\\","");
 //        Log.d(TAG, response);
 ////            Log.d(TAG, Boolean.toString( == response3));
+
+        // once received response from server, parse it
         try {
             JSONObject jsonResponse = new JSONObject(c.getServerResponse());
             JSONArray message = jsonResponse.getJSONArray("message");
-            tripData.clear();
+            tripData.clear();  // clear everything in tripData, get ready for the new data
+            // for trips in the response, parse it one by one
             for (int i = 0; i < message.length(); i++) {
                 JSONObject element = message.getJSONObject(i);
-                String [] trip = new String[4];
+                // the trip array stores the information about the trips
+                String [] trip = new String[4]; // trip_id, date, distance, emission
                 trip[0] = String.valueOf(element.getInt("trip_id"));
                 trip[1] = element.getString("date");
                 int dist = element.getInt("dist");
                 int emission = element.getInt("total_emi");
+
+                // update total emission and total kilometer travelled
                 totalEmission += emission;
                 totalkm += dist;
                 trip[2] = String.valueOf(dist);
                 trip[3] = String.valueOf(emission);
+                // add this trip to the list tripData
                 tripData.add(trip);
             }
-        aList.clear();
+            // clear everything in aList, need to display the new data
+            aList.clear();
 
             //populate list to display trips on the screen
             for (int i = 0; i < tripData.size(); i++){
                 String[] trip = tripData.get(i);
                 aList.add("Trip " + trip[0] + "  " + trip[1] + "  " + trip[2]+ "km " + trip[3] +"g/KM");
             }
+            // notify adapter data has changed, need to update UI
             aListAdapter.notifyDataSetChanged();
 
             //graph, display emission on the graph
@@ -212,6 +235,8 @@ public class AnalyticsFragment extends Fragment {
                 bList.add(new Entry(i, Integer.parseInt(tripData.get(i)[3])));
             }
 
+            // display a graph of the trips, note, the response received from server orders the trip by
+            // date, in ascending order, so the graph will also display the trips in the same order.
             LineDataSet setList = new LineDataSet(bList, "Emissions");
             setList.setAxisDependency(YAxis.AxisDependency.LEFT);
             List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
@@ -220,6 +245,7 @@ public class AnalyticsFragment extends Fragment {
             binding.emissionsGraph.setData(data);
             binding.emissionsGraph.invalidate();
 
+            // do some analysis on the average kilometers and emission over the two dates
             float average;
             if (totalkm == 0) {
                 average = 0;

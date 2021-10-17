@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,8 +31,9 @@ public class ChangeVehicleFragment extends Fragment {
     private FragmentChangeVehicleBinding binding;
     private String carJSON;
     private JSONObject carRegoJSON;
+    // carRegoList will contain all the registration of cars in the database
     private List<String> carRegoList = new ArrayList<String>();
-    private String[] carInfo = new String[6]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
+    private String[] carInfo = new String[7]; // rego, vin, make, year, fuelConsumption, kilometers, engine;
 
     @Override
     public View onCreateView(
@@ -52,6 +54,7 @@ public class ChangeVehicleFragment extends Fragment {
         try {
             JSONObject tempJSON = new JSONObject(allRegos);
             JSONArray message = tempJSON.getJSONArray("message");
+            // add the rego of all vehicles in the database to carRegoList
             for (int i = 0; i < message.length(); i++) {
                 carRegoList.add(message.getJSONObject(i)
                         .getString("registration"));
@@ -75,59 +78,73 @@ public class ChangeVehicleFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 6) {
-                    //ask server for car's info
-                    String ip = "194.193.148.240";
-                    Integer port = 1024;
-                    JSONObject json = new JSONObject();
-                    JSONObject json_data = new JSONObject();
-                    try {
-                        json_data.put("rego",s.toString());
-                        json.put("type", 2);
-                        json.put("data",json_data);
-                    }
-                    catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    asyncCommunication c = new asyncCommunication(ip,port,json,0);
-                    Thread thread = new Thread(c);
-                    thread.start();
-                    while (!c.finished()) {
-                        continue;
-                    }
+                    // if the registration is in the database, then ask the server for it
+                    if (carRegoList.contains(s.toString())){
+                        //ask server for car's info
+                        String ip = "194.193.148.240";
+                        Integer port = 1024;
+                        JSONObject json = new JSONObject();
+                        JSONObject json_data = new JSONObject();
+                        try {
+                            json_data.put("rego",s.toString());
+                            json.put("type", 2);
+                            json.put("data",json_data);
+                        }
+                        catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        asyncCommunication c = new asyncCommunication(ip,port,json,0);
+                        Thread thread = new Thread(c);
+                        thread.start();
+                        while (!c.finished()) {
+                            continue;
+                        }
 
-                    try {
-                        String response = c.getServerResponse();
-                        JSONObject jsonResponse = new JSONObject(response);
-                        JSONArray message = jsonResponse.getJSONArray("message");
-                        JSONObject vehicleInfo = message.getJSONObject(0);
-                        carInfo[0] = vehicleInfo.getString("registration");
-                        carInfo[1] = vehicleInfo.getString("vin");
-                        carInfo[2] = vehicleInfo.getString("make");
-                        carInfo[3] = String.valueOf(vehicleInfo.getInt("yr"));
-                        carInfo[4] = String.valueOf(vehicleInfo.getInt("fuel_cons"));
-                        carInfo[5] = vehicleInfo.getString("model");
-                        carInfo[6] = vehicleInfo.getString("eng");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        // parse response and store it in the array carInfo
+                        try {
+                            String response = c.getServerResponse();
+                            JSONObject jsonResponse = new JSONObject(response);
+                            JSONArray message = jsonResponse.getJSONArray("message");
+                            JSONObject vehicleInfo = message.getJSONObject(0);
+                            carInfo[0] = vehicleInfo.getString("registration");
+                            carInfo[1] = vehicleInfo.getString("vin");
+                            carInfo[2] = vehicleInfo.getString("make");
+                            carInfo[3] = String.valueOf(vehicleInfo.getInt("yr"));
+                            carInfo[4] = String.valueOf(vehicleInfo.getInt("fuel_cons"));
+                            carInfo[5] = vehicleInfo.getString("model");
+                            carInfo[6] = vehicleInfo.getString("eng");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //update UI for the vehicle
+                        binding.categoryText.setText(String.format(
+                            "VIN:%s\n" +
+                            "Make:%s\n" +
+                            "Year:%s\n" +
+                            "Fuel Consumption:%s\n" +
+                            "Model:%s\n" +
+                            "Engine:%s",
+                            carInfo[1], carInfo[2], carInfo[3], carInfo[4], carInfo[5], carInfo[6]
+                        ));
+                        Log.d(TAG, "onTextChanged: CHANGED");
+                    }else{
+                        // if the registration entered is not in carRegoList, then it is an invalid
+                        // registration, i.e. no record for it in the database, show a toast to notify
+                        // the user
+                        Toast invalidRegoMsg = Toast.makeText(view.getContext(), "invalid registration", Toast.LENGTH_LONG);
+                        invalidRegoMsg.show();
+                        binding.regoAutoCompleteText.setText("");
                     }
-                    //put in variables (array)
-                binding.regoText.setText(String.format(
-                        "VIN:%s\n" +
-                        "Make:%s\n" +
-                        "Year:%s\n" +
-                        "Fuel Consumption:%s\n" +
-                        "Model:%s\n" +
-                        "Engine:%s",
-                        carInfo[1], carInfo[2], carInfo[3], carInfo[4], carInfo[5], carInfo[6]
-                ));
-                    Log.d(TAG, "onTextChanged: CHANGED");
                 }
             }
         });
     }
 
+    // on click listener for this fragment
     private void onClick(View view) {
         switch (view.getId()) {
+            // if the user decides to change the vehicle, then send the information about the new vehicle
+            // to the parent fragment, vehicleInfoFragment, for it to display the new information
             case R.id.changeVehicleButton:
                 Bundle bundle = new Bundle();
                 bundle.putStringArray("carInfo", carInfo);

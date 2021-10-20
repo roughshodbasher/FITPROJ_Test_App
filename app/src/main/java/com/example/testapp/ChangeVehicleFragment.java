@@ -1,5 +1,7 @@
 package com.example.testapp;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,8 +24,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 
 public class ChangeVehicleFragment extends Fragment {
@@ -51,6 +51,20 @@ public class ChangeVehicleFragment extends Fragment {
         binding.changeVehicleButton.setOnClickListener(this::onClick);
         //get all regos from server
         String allRegos = "{\"status\": 200, \"message\": [{\"registration\": \"ABC123\"}, {\"registration\": \"ABCDEF\"}, {\"registration\": \"EFG123\"}, {\"registration\": \"111KLM\"}, {\"registration\": \"12345F\"}, {\"registration\": \"PASWRD\"}]}";
+        String ip = "194.193.148.240";
+        Integer port = 1024;
+        JSONObject json = new JSONObject();
+        try {
+            json.put("type",4);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        asyncCommunication c = new asyncCommunication(ip,port,json,0);
+        Thread thread = new Thread(c);
+        thread.start();
+        while (!c.finished()) {
+            continue;
+        }
         try {
             JSONObject tempJSON = new JSONObject(allRegos);
             JSONArray message = tempJSON.getJSONArray("message");
